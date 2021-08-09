@@ -4,6 +4,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import time
+import requests
+from fake_useragent import UserAgent
 
 
 link = 'https://transport.mos.ru/gruzoviki/reestr'
@@ -23,8 +25,14 @@ class MosTransport():
         browser.switch_to.frame(iframe)
         return browser
 
-    def get_captcha(self):
+    def get_captcha(self, captcha_link):
         """ Разгадывает капчу """
+
+        with open('captcha.jpg', 'wb') as target:
+            ua = UserAgent()
+            headers = {'User-Agent': ua.firefox}
+            a = requests.get(captcha_link, headers=headers)
+            target.write(a.content)
         captcha = '1234QQ'
         return captcha
 
@@ -57,7 +65,7 @@ class MosTransport():
         captcha_link = WebDriverWait(browser, 10).until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "img[title = 'captcha']"))).get_attribute('src')
 
-        captcha = MosTransport.get_captcha(captcha_link)
+        captcha = MosTransport.get_captcha(link, captcha_link)
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "input#sip_search_captcha"))
                                          ).send_keys(captcha)
         button = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "button.btn")))
