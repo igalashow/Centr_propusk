@@ -65,12 +65,13 @@ class MosTransport():
         captcha_link = WebDriverWait(browser, 10).until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "img[title = 'captcha']"))).get_attribute('src')
 
-        captcha = MosTransport.get_captcha(link, captcha_link)
+        captcha = self.get_captcha(captcha_link)
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "input#sip_search_captcha"))
                                          ).send_keys(captcha)
+        time.sleep(1)
         button = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "button.btn")))
         button.click()
-        time.sleep(10)
+        time.sleep(5)
 
 if __name__ == "__main__":
     try:
