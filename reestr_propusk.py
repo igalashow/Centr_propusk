@@ -23,6 +23,12 @@ class MosTransport():
         browser.switch_to.frame(iframe)
         return browser
 
+    def get_captcha(self):
+        """ Разгадывает капчу """
+        captcha = '1234QQ'
+        return captcha
+
+
     def login_form(self, browser, sip_series='МБ', sip_number='12345678', grz='B777HC777', validity_period='1'):
         """ Заполнение полей формы логина """
         # Выбираем серию пропуска
@@ -48,9 +54,15 @@ class MosTransport():
         time.sleep(1)
 
         # Вводим код капчи
-        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "input#sip_search_captcha"))
-                                         ).send_keys(grz)
+        captcha_link = WebDriverWait(browser, 10).until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "img[title = 'captcha']"))).get_attribute('src')
 
+        captcha = MosTransport.get_captcha(captcha_link)
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "input#sip_search_captcha"))
+                                         ).send_keys(captcha)
+        button = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "button.btn")))
+        button.click()
+        time.sleep(10)
 
 if __name__ == "__main__":
     try:
